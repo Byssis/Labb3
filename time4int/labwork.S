@@ -15,7 +15,12 @@
 delaycon: .word 13500
 
 .text
-.global hexasc, delay, time2string, enable_interrupt 
+.global hexasc, delay, time2string, enable_interrupt
+
+enable_interrupt:
+  ei
+  jr $ra
+  nop
 
 hexasc:
   sll $t0, $a0, 28  # skiftar 28 steg till vänster för att ta bort ev 1:a vid binära tal med fler än 4 siffror
@@ -120,9 +125,4 @@ time2string:
   POP     $ra
 
   jr  $ra # hoppar tillbaka till där den var innan
-  nop
-
-enable_interrupt:
-  ei
-  jr $ra
   nop

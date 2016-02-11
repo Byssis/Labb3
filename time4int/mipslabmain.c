@@ -48,10 +48,10 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 
 	display_init();
-	display_string(0, "Vi är så bra!!!");
-	display_string(1, "Det löser sig!");
-	display_string(2, ":)");
-	display_string(3, "Kämpa!");
+	//display_string(0, "Vi är så bra!!!");
+	//display_string(1, "Det löser sig!");
+	//display_string(2, ":)");
+	//display_string(3, "Kämpa!");
 	display_update();
 
 	display_image(96, icon);

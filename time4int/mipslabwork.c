@@ -24,8 +24,7 @@ char textstring[] = "text, more text, and even more text!";
 void user_isr( void )
 {
   if(IFS(0) & 0x100){
-    IFS(0) = 0;
-    timeoutcount++;
+    IFS(0) &= ~0x100;
     if(timeoutcount == 10){
       timeoutcount = 0;
       time2string(textstring,mytime);
@@ -33,7 +32,13 @@ void user_isr( void )
       display_update();
       tick(&mytime);
     }
+    else timeoutcount++;
   }
+  if(IFS(0) & 0x80) {
+    IFS(0) &= ~0x80;
+    PORTE += 1;
+  }
+  return;
 }
 
 /* Lab-specific initialization goes here */
@@ -43,6 +48,7 @@ void labinit( void )
   *trisE &= ~0xff;
   TRISD |= 0xFE0;
   // 1111 1110 0000
+  PORTE = 0x0;
 
 
   // Configure timer2 to give 10 interrupt per second
@@ -54,12 +60,16 @@ void labinit( void )
   T2CONSET = 0x8000;
 
 
-  IEC(0) |= 0x100;   /// Enable Timer 2, bit 8 of IEC0
-  IPC(2) &= ~0xE;    // Priority, probably skippable
-  IFS(0) = 0;        // Reset all interupt flags to zero
+  IPC(2) = 0x1f;    // Priority, probably skippable
+  IEC(0) = 0x100;   /// Enable Timer 2, bit 8 of IEC0
+  // 011111
+  IFS(0) = 0;        // Reset all interupt fl ags to zero
 
-  __use_isr_install();  // KTH-lab code, will call a method named "user_isr()"
-  enable_interrupt();   //
+  IEC(0) |= 0x80;
+  IPC(1) |= 0x1f000000;
+
+  //__use_isr_install();  // KTH-lab code, will call a method named "user_isr()"
+  enable_interrupt();
 
 
   return;
@@ -82,6 +92,5 @@ void labwork( void )
 
   display_string(0,itoaconv(prime));
   display_update();
-
   //display_debug(0xbf8810b0);
 }
